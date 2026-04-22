@@ -72,7 +72,7 @@ button[kind="primary"]:hover {
 
 /* Upload text */
 .stFileUploader div {
-    color: #ffffff !important;
+    color: #000000 !important;
 }
 
 /* Upload button inside */
