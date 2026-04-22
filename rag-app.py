@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5, h6, p, label {
    🔘 ASK BUTTON (BLACK + WHITE TEXT)
    ========================= */
 button[kind="primary"] {
-    background: #000000 !important;   /* BLACK */
+    background: #111111 !important;   /* BLACK */
     color: #ffffff !important;        /* WHITE TEXT */
     font-weight: 900 !important;
     border-radius: 10px !important;
