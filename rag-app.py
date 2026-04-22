@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌌 BACKGROUND (AI BRAIN DARK THEME)
+# 🌌 BACKGROUND + UI FIX
 # -------------------------------------------------------
 st.markdown("""
 <style>
@@ -31,7 +31,14 @@ st.markdown("""
 }
 
 /* =========================
-   💡 INPUT TEXT (BLACK)
+   💬 TEXT FIX
+   ========================= */
+h1, h2, h3, h4, h5, h6, p, label {
+    color: #ffffff !important;
+}
+
+/* =========================
+   INPUT + PLACEHOLDER (BLACK)
    ========================= */
 input, textarea {
     background: #ffffff !important;
@@ -39,22 +46,14 @@ input, textarea {
     border: 2px solid #000000 !important;
 }
 
-/* =========================
-   ✏️ PLACEHOLDER (BLACK)
-   ========================= */
 input::placeholder,
 textarea::placeholder {
     color: #000000 !important;
     opacity: 1 !important;
 }
 
-/* Streamlit text input fix */
-[data-testid="stTextInput"] input {
-    color: #000000 !important;
-}
-
 /* =========================
-   📂 FILE UPLOADER (BLACK TEXT + ICON)
+   📂 FILE UPLOADER (BLACK + WHITE TEXT)
    ========================= */
 .stFileUploader > div {
     background: #ffffff !important;
@@ -77,26 +76,30 @@ textarea::placeholder {
 }
 
 /* =========================
-   🔘 ASK BUTTON (BLACK TEXT)
+   🔘 ASK BUTTON (FINAL FIX - NO BUGS)
    ========================= */
-button[kind="primary"] {
-    background: #00eaff !important;
-    color: #000000 !important;
+.stButton > button {
+    background: #000000 !important;
+    color: #ffffff !important;
     font-weight: 900 !important;
     border-radius: 10px !important;
-    border: none !important;
+    border: 2px solid #333 !important;
+    opacity: 1 !important;
 }
 
-button[kind="primary"]:hover {
-    background: #00bcd4 !important;
-    color: #000000 !important;
-}
-
-/* =========================
-   TEXT GLOBAL FIX
-   ========================= */
-h1, h2, h3, h4, h5, h6, p, label {
+/* Hover */
+.stButton > button:hover {
+    background: #111111 !important;
     color: #ffffff !important;
+    border: 2px solid #555 !important;
+}
+
+/* Active / Focus stability */
+.stButton > button:active,
+.stButton > button:focus {
+    background: #000000 !important;
+    color: #ffffff !important;
+    outline: none !important;
 }
 
 /* =========================
@@ -154,58 +157,47 @@ st.markdown("<div class='subtitle'>Upload PDF → Ask Questions → Get Smart An
 # -------------------------------------------------------
 # RAG SETUP
 # -------------------------------------------------------
-with st.container():
-    st.markdown("<div class='card'>", unsafe_allow_html=True)
+uploaded_pdf = st.file_uploader("📄 Upload your PDF here", type=["pdf"])
 
-    uploaded_pdf = st.file_uploader("📄 Upload your PDF here", type=["pdf"])
+retriever = None
+llm = None
+prompt = None
 
-    retriever = None
-    llm = None
-    prompt = None
+if uploaded_pdf:
+    st.success("PDF uploaded successfully!")
 
-    if uploaded_pdf:
-        st.success("PDF uploaded successfully!")
+    temp_dir = tempfile.mkdtemp()
+    pdf_path = os.path.join(temp_dir, uploaded_pdf.name)
 
-        temp_dir = tempfile.mkdtemp()
-        pdf_path = os.path.join(temp_dir, uploaded_pdf.name)
+    with open(pdf_path, "wb") as f:
+        f.write(uploaded_pdf.read())
 
-        with open(pdf_path, "wb") as f:
-            f.write(uploaded_pdf.read())
+    loader = PyPDFLoader(pdf_path)
+    docs = loader.load()
 
-        # Load PDF
-        loader = PyPDFLoader(pdf_path)
-        docs = loader.load()
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=800,
+        chunk_overlap=200
+    )
+    chunks = splitter.split_documents(docs)
 
-        # Split text
-        splitter = RecursiveCharacterTextSplitter(
-            chunk_size=800,
-            chunk_overlap=200
-        )
-        chunks = splitter.split_documents(docs)
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
-        # Embeddings
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
+    vectorstore = Chroma.from_documents(
+        chunks,
+        embedding=embeddings
+    )
 
-        # Vector DB
-        vectorstore = Chroma.from_documents(
-            chunks,
-            embedding=embeddings
-        )
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
+    llm = ChatMistralAI(model="mistral-small")
 
-        # LLM
-        llm = ChatMistralAI(model="mistral-small")
-
-        # Prompt
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "Use only the context. If not found, say 'Not found in document.'"),
-            ("human", "Context:\n{context}\n\nQuestion:\n{question}")
-        ])
-
-    st.markdown("</div>", unsafe_allow_html=True)
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "Use only the context. If not found, say 'Not found in document.'"),
+        ("human", "Context:\n{context}\n\nQuestion:\n{question}")
+    ])
 
 # -------------------------------------------------------
 # CHAT SECTION
