@@ -3,7 +3,8 @@ import tempfile
 import streamlit as st
 from dotenv import load_dotenv
 
-from langchain_community.document_loaders import PyMuPDFLoader
+# FIXED: Use PyPDFLoader (works on Streamlit Cloud)
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
@@ -109,7 +110,8 @@ with st.container():
         with open(pdf_path, "wb") as f:
             f.write(uploaded_pdf.read())
 
-        loader = PyMuPDFLoader(pdf_path)
+        # FIXED ✔ – PyMuPDFLoader replaced with PyPDFLoader
+        loader = PyPDFLoader(pdf_path)
         docs = loader.load()
 
         splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
