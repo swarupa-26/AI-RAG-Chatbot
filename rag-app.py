@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌗 ADAPTIVE UI + BACKGROUND IMAGE
+# 🌗 ADAPTIVE UI + AI BACKGROUND
 # -------------------------------------------------------
 st.markdown("""
 <style>
@@ -25,8 +25,8 @@ st.markdown("""
 
     [data-testid="stAppViewContainer"] {
         background:
-            linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)),
-            url("https://images.unsplash.com/photo-1677442136019-21780ecad995");
+            linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
+            url("https://images.unsplash.com/photo-1555949963-aa79dcee981c");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -52,7 +52,7 @@ st.markdown("""
     [data-testid="stAppViewContainer"] {
         background:
             linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.95)),
-            url("https://images.unsplash.com/photo-1677442136019-21780ecad995");
+            url("https://images.unsplash.com/photo-1555949963-aa79dcee981c");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -167,7 +167,7 @@ with st.container():
 
         prompt = ChatPromptTemplate.from_messages([
             ("system", "Use only the context. If not found, say 'Not found in document.'"),
-            ("human", "Context:\n{context}\n\nQuestion:\n{question}")
+            ("human", "Context:\\n{context}\\n\\nQuestion:\\n{question}")
         ])
 
     st.markdown("</div>", unsafe_allow_html=True)
@@ -185,7 +185,7 @@ if uploaded_pdf:
     if st.button("Ask"):
         docs = retriever.invoke(query)
 
-        context = "\n\n".join([d.page_content for d in docs])
+        context = "\\n\\n".join([d.page_content for d in docs])
 
         res = llm.invoke(prompt.invoke({
             "context": context,
@@ -195,7 +195,6 @@ if uploaded_pdf:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", res.content))
 
-    # Display chat
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
