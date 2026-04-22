@@ -30,16 +30,19 @@ h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
 }
 
-/* Question Input Styling - Removed external black border */
-input, textarea {
-    background: #ffffff !important;
-    color: #000000 !important;
+/* Remove all borders from the question input box */
+[data-testid="stTextInput"] div[data-baseweb="input"] {
     border: none !important;
+    background-color: #ffffff !important;
     border-radius: 8px !important;
 }
 
+input {
+    color: #000000 !important;
+}
+
 /* =========================================
-   🔘 UNIFIED BUTTON STYLING
+   🔘 BUTTON STYLING
    ========================================= */
 
 /* The Ask Button */
@@ -52,13 +55,17 @@ input, textarea {
     width: 100%;
 }
 
-/* The Upload Button - Text changed to BLACK */
+/* The Upload Button - Forced Black Text */
 [data-testid="stFileUploader"] button {
     background: #ffffff !important;
     color: #000000 !important;
     font-weight: 900 !important;
     border-radius: 10px !important;
     border: 1px solid #ffffff !important;
+}
+
+[data-testid="stFileUploader"] button p {
+    color: #000000 !important;
 }
 
 /* =========================
