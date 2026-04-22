@@ -13,43 +13,56 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌌 FORCE DARK MODE UI + AI BACKGROUND
+# 🌌 SAFE DARK UI + AI BRAIN BACKGROUND
 # -------------------------------------------------------
 st.markdown("""
 <style>
 
 /* =========================
-   🌌 GLOBAL DARK BACKGROUND
+   🌌 BACKGROUND (FORCED DARK)
    ========================= */
-
 [data-testid="stAppViewContainer"] {
     background:
-        linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.88)),
+        linear-gradient(rgba(0,0,0,0.80), rgba(0,0,0,0.90)),
         url("https://images.stockcake.com/public/c/7/d/c7d334f3-aa59-4a9a-b77c-afe2ce609223_large/digital-brain-illuminated-stockcake.jpg");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    color: white !important;
 }
 
-/* Force all text visible */
-html, body, p, label, span, div {
-    color: white !important;
+/* =========================
+   💡 SAFE TEXT COLORS (NO BREAK UI)
+   ========================= */
+h1, h2, h3, h4, h5, h6, p, label {
+    color: #ffffff !important;
 }
 
-/* Inputs */
+/* File uploader + inputs */
+.stFileUploader label,
+.stTextInput label {
+    color: #ffffff !important;
+}
+
 input, textarea {
     background: rgba(255,255,255,0.12) !important;
-    color: white !important;
-    border: 1px solid white !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.4) !important;
 }
 
-/* Header */
+input::placeholder {
+    color: rgba(255,255,255,0.6) !important;
+}
+
+/* =========================
+   HEADER
+   ========================= */
 [data-testid="stHeader"] {
     background: transparent;
 }
 
-/* Title */
+/* =========================
+   TITLE STYLE
+   ========================= */
 .title {
     font-size: 42px;
     font-weight: 900;
@@ -57,14 +70,15 @@ input, textarea {
     color: #00eaff;
 }
 
-/* Subtitle */
 .subtitle {
     text-align: center;
-    color: #59c8ff;
+    color: #bdefff;
     margin-bottom: 30px;
 }
 
-/* Glass card */
+/* =========================
+   CARD UI
+   ========================= */
 .card {
     background: rgba(255,255,255,0.08);
     padding: 25px;
@@ -73,7 +87,9 @@ input, textarea {
     border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* Button */
+/* =========================
+   BUTTON
+   ========================= */
 button[kind="primary"] {
     background: linear-gradient(135deg, #00eaff, #007bff) !important;
     color: black !important;
@@ -81,21 +97,24 @@ button[kind="primary"] {
     font-weight: bold !important;
 }
 
-/* User chat */
+/* =========================
+   CHAT UI
+   ========================= */
 .user-msg {
     background: rgba(255,180,0,0.35);
     padding: 12px;
     border-radius: 12px;
     margin: 6px 0;
     text-align: right;
+    color: white !important;
 }
 
-/* AI chat */
 .ai-msg {
     background: rgba(0,200,255,0.35);
     padding: 12px;
     border-radius: 12px;
     margin: 6px 0;
+    color: white !important;
 }
 
 </style>
@@ -108,7 +127,7 @@ st.markdown("<div class='title'>🤖 AI RAG Chatbot</div>", unsafe_allow_html=Tr
 st.markdown("<div class='subtitle'>Upload PDF → Ask Questions → Get Smart Answers</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# FILE UPLOAD + RAG SETUP
+# PDF UPLOAD + RAG SETUP
 # -------------------------------------------------------
 with st.container():
     st.markdown("<div class='card'>", unsafe_allow_html=True)
@@ -187,7 +206,7 @@ if uploaded_pdf and retriever:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", response.content))
 
-    # Display chat history
+    # Show chat history
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
