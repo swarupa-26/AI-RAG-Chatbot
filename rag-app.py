@@ -14,23 +14,61 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🎨 PERFECT BACKGROUND (NO IMAGE REQUIRED)
+# 🌗 AUTO DARK/LIGHT MODE ADAPTIVE UI
 # -------------------------------------------------------
 st.markdown("""
 <style>
 
-/* 🌌 Gradient Dark AI Background */
-[data-testid="stAppViewContainer"] {
-    background: radial-gradient(circle at 20% 20%, #0f2027, #203a43, #000000);
-    color: white;
+/* ======================
+   SYSTEM DARK MODE
+   ====================== */
+@media (prefers-color-scheme: dark) {
+
+    /* Background */
+    [data-testid="stAppViewContainer"] {
+        background: radial-gradient(circle at 20% 20%, #0f2027, #203a43, #000000);
+        color: white !important;
+    }
+
+    body, p, label, span, div {
+        color: white !important;
+    }
+
+    input, textarea {
+        background: rgba(255,255,255,0.15) !important;
+        color: white !important;
+        border: 1px solid white !important;
+    }
 }
 
-/* Remove header */
+/* ======================
+   SYSTEM LIGHT MODE
+   ====================== */
+@media (prefers-color-scheme: light) {
+
+    /* Light background */
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(to bottom right, #ffffff, #e7f4ff);
+        color: black !important;
+    }
+
+    body, p, label, span, div {
+        color: black !important;
+    }
+
+    input, textarea {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #444 !important;
+    }
+}
+
+/* ---------- Common UI Styles (Work in both themes) ---------- */
+
 [data-testid="stHeader"] {
     background: transparent;
 }
 
-/* Title */
 .title {
     font-size: 42px;
     font-weight: 900;
@@ -38,14 +76,12 @@ st.markdown("""
     color: #00eaff;
 }
 
-/* Subtitle */
 .subtitle {
     text-align: center;
-    color: #bdefff;
+    color: #59c8ff;
     margin-bottom: 30px;
 }
 
-/* Glass card */
 .card {
     background: rgba(255,255,255,0.08);
     padding: 25px;
@@ -54,7 +90,6 @@ st.markdown("""
     border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* Input box */
 input {
     border-radius: 10px !important;
     padding: 10px !important;
@@ -88,7 +123,7 @@ button[kind="primary"] {
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# HEADER
+# HEADER UI
 # -------------------------------------------------------
 st.markdown("<div class='title'>🤖 AI RAG Chatbot</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>Upload PDF → Ask Questions → Get Smart Answers</div>", unsafe_allow_html=True)
@@ -110,7 +145,6 @@ with st.container():
         with open(pdf_path, "wb") as f:
             f.write(uploaded_pdf.read())
 
-        # FIXED ✔ – PyMuPDFLoader replaced with PyPDFLoader
         loader = PyPDFLoader(pdf_path)
         docs = loader.load()
 
@@ -122,20 +156,19 @@ with st.container():
         )
 
         vectorstore = Chroma.from_documents(chunks, embedding=embeddings)
-
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
         llm = ChatMistralAI(model="mistral-small")
 
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Use only the context. If not found say 'Not found in document.'"),
+            ("system", "Use only the context. If not found, say 'Not found in document.'"),
             ("human", "Context:\n{context}\n\nQuestion:\n{question}")
         ])
 
     st.markdown("</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# CHAT
+# CHAT INTERFACE
 # -------------------------------------------------------
 if uploaded_pdf:
 
@@ -157,7 +190,7 @@ if uploaded_pdf:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", res.content))
 
-    # Display chat
+    # Display chat bubbles
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
