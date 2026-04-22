@@ -13,13 +13,13 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌌 DARK UI + AI BRAIN BACKGROUND
+# 🌌 DARK UI + AI BACKGROUND
 # -------------------------------------------------------
 st.markdown("""
 <style>
 
 /* =========================
-   🌌 BACKGROUND (FORCED DARK)
+   🌌 BACKGROUND
    ========================= */
 [data-testid="stAppViewContainer"] {
     background:
@@ -31,7 +31,7 @@ st.markdown("""
 }
 
 /* =========================
-   💡 SAFE TEXT (NO VISIBILITY ISSUES)
+   💡 TEXT FIX
    ========================= */
 h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
@@ -81,20 +81,34 @@ input::placeholder {
 }
 
 /* =========================
-   BUTTON FIX (IMPORTANT)
+   🔘 BUTTON FIX (BLACK TEXT)
    ========================= */
 button[kind="primary"] {
-    background: linear-gradient(135deg, #00eaff, #007bff) !important;
-    color: #000000 !important;   /* black text for visibility */
+    background: linear-gradient(135deg, #00eaff, #00bcd4) !important;
+    color: #000000 !important;   /* BLACK TEXT */
+    font-weight: 900 !important;
     border-radius: 10px !important;
-    font-weight: 700 !important;
     border: none !important;
 }
 
 /* Hover */
 button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #00bcd4, #005eff) !important;
+    background: linear-gradient(135deg, #00d4ff, #0099cc) !important;
     color: #000000 !important;
+}
+
+/* =========================
+   FILE UPLOADER TEXT FIX
+   ========================= */
+.stFileUploader label {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* Upload dropzone text */
+button[data-testid="stFileUploaderDropzone"] {
+    color: #000000 !important;   /* BLACK TEXT */
+    font-weight: 800 !important;
 }
 
 /* =========================
@@ -147,23 +161,19 @@ with st.container():
         with open(pdf_path, "wb") as f:
             f.write(uploaded_pdf.read())
 
-        # Load PDF
         loader = PyPDFLoader(pdf_path)
         docs = loader.load()
 
-        # Split text
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=800,
             chunk_overlap=200
         )
         chunks = splitter.split_documents(docs)
 
-        # Embeddings
         embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
 
-        # Vector DB
         vectorstore = Chroma.from_documents(
             chunks,
             embedding=embeddings
@@ -171,10 +181,8 @@ with st.container():
 
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
-        # LLM
         llm = ChatMistralAI(model="mistral-small")
 
-        # Prompt
         prompt = ChatPromptTemplate.from_messages([
             ("system", "Use only the context. If not found, say 'Not found in document.'"),
             ("human", "Context:\n{context}\n\nQuestion:\n{question}")
@@ -206,7 +214,6 @@ if uploaded_pdf and retriever:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", response.content))
 
-    # Display chat
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
