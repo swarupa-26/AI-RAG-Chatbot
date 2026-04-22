@@ -13,13 +13,13 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌌 BACKGROUND + UI FIX
+# 🌌 BACKGROUND
 # -------------------------------------------------------
 st.markdown("""
 <style>
 
 /* =========================
-   🌌 BACKGROUND
+   🌌 BACKGROUND IMAGE
    ========================= */
 [data-testid="stAppViewContainer"] {
     background:
@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5, h6, p, label {
 }
 
 /* =========================
-   INPUT + PLACEHOLDER (BLACK)
+   INPUT + PLACEHOLDER
    ========================= */
 input, textarea {
     background: #ffffff !important;
@@ -53,30 +53,58 @@ textarea::placeholder {
 }
 
 /* =========================
-   📂 FILE UPLOADER (BLACK + WHITE TEXT)
+   📂 UPLOAD BUTTON (FULL FIX)
    ========================= */
 .stFileUploader > div {
-    background: #ffffff !important;
-    border: 2px solid #000000 !important;
+    background: #000000 !important;
+    border: 2px solid #333 !important;
     border-radius: 12px !important;
-    padding: 10px !important;
+    padding: 12px !important;
 }
 
+/* Upload label */
 .stFileUploader label {
-    color: #000000 !important;
+    color: #ffffff !important;
     font-weight: 800 !important;
 }
 
+/* Upload inner text */
 .stFileUploader div {
-    color: #000000 !important;
+    color: #ffffff !important;
 }
 
+/* Upload button inside uploader */
+.stFileUploader button {
+    background: #000000 !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    border: 2px solid #333 !important;
+    border-radius: 8px !important;
+    opacity: 1 !important;
+}
+
+/* Upload hover */
+.stFileUploader button:hover {
+    background: #111111 !important;
+    color: #ffffff !important;
+    border: 2px solid #555 !important;
+}
+
+/* Upload focus fix */
+.stFileUploader button:active,
+.stFileUploader button:focus {
+    background: #000000 !important;
+    color: #ffffff !important;
+    outline: none !important;
+}
+
+/* Upload icon */
 .stFileUploader svg {
-    fill: #000000 !important;
+    fill: #ffffff !important;
 }
 
 /* =========================
-   🔘 ASK BUTTON (FINAL FIX - NO BUGS)
+   🔘 ASK BUTTON (FULL FIX)
    ========================= */
 .stButton > button {
     background: #000000 !important;
@@ -94,7 +122,7 @@ textarea::placeholder {
     border: 2px solid #555 !important;
 }
 
-/* Active / Focus stability */
+/* Active + focus */
 .stButton > button:active,
 .stButton > button:focus {
     background: #000000 !important;
