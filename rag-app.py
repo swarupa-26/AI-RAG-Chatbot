@@ -30,11 +30,12 @@ h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
 }
 
-/* Remove all borders from the question input box */
+/* Question Input Styling - Remove border and keep background white */
 [data-testid="stTextInput"] div[data-baseweb="input"] {
     border: none !important;
     background-color: #ffffff !important;
     border-radius: 8px !important;
+    box-shadow: none !important;
 }
 
 input {
@@ -55,7 +56,7 @@ input {
     width: 100%;
 }
 
-/* The Upload Button - Forced Black Text */
+/* The Upload Button - Forced Black for icon and ALL text */
 [data-testid="stFileUploader"] button {
     background: #ffffff !important;
     color: #000000 !important;
@@ -64,8 +65,10 @@ input {
     border: 1px solid #ffffff !important;
 }
 
-[data-testid="stFileUploader"] button p {
+/* Targets the specific text and "Browse files" label inside the button */
+[data-testid="stFileUploader"] button * {
     color: #000000 !important;
+    fill: #000000 !important;
 }
 
 /* =========================
