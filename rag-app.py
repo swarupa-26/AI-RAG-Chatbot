@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌌 DARK AI BACKGROUND
+# 🌌 BACKGROUND (AI BRAIN DARK THEME)
 # -------------------------------------------------------
 st.markdown("""
 <style>
@@ -31,68 +31,72 @@ st.markdown("""
 }
 
 /* =========================
-   💡 TEXT FIX
+   💡 INPUT TEXT (BLACK)
    ========================= */
-h1, h2, h3, h4, h5, h6, p, label {
-    color: #ffffff !important;
+input, textarea {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
 }
 
 /* =========================
-   🔘 ASK BUTTON (BLACK + WHITE TEXT)
+   ✏️ PLACEHOLDER (BLACK)
    ========================= */
-button[kind="primary"] {
-    background: #111111 !important;
-    color: #ffffff !important;        /* WHITE TEXT */
-    font-weight: 900 !important;
-    border-radius: 10px !important;
-    border: 1px solid #333 !important;
+input::placeholder,
+textarea::placeholder {
+    color: #000000 !important;
+    opacity: 1 !important;
 }
 
-/* Hover */
-button[kind="primary"]:hover {
-    background: #111111 !important;
-    color: #ffffff !important;
+/* Streamlit text input fix */
+[data-testid="stTextInput"] input {
+    color: #000000 !important;
 }
 
 /* =========================
-   📂 UPLOAD BOX (BLACK + WHITE TEXT)
+   📂 FILE UPLOADER (BLACK TEXT + ICON)
    ========================= */
 .stFileUploader > div {
-    background: #000000 !important;
-    border: 2px solid #333 !important;
+    background: #ffffff !important;
+    border: 2px solid #000000 !important;
     border-radius: 12px !important;
     padding: 10px !important;
 }
 
-/* Upload label */
 .stFileUploader label {
-    color: #ffffff !important;
-    font-weight: 700 !important;
+    color: #000000 !important;
+    font-weight: 800 !important;
 }
 
-/* Upload text */
 .stFileUploader div {
     color: #000000 !important;
 }
 
-/* Upload button inside */
-button[data-testid="stFileUploaderDropzone"] {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid #333 !important;
-    font-weight: 800 !important;
+.stFileUploader svg {
+    fill: #000000 !important;
 }
 
 /* =========================
-   INPUT FIX
+   🔘 ASK BUTTON (BLACK TEXT)
    ========================= */
-input, textarea {
-    background: rgba(255,255,255,0.12) !important;
-    color: #ffffff !important;
+button[kind="primary"] {
+    background: #00eaff !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    border-radius: 10px !important;
+    border: none !important;
 }
 
-input::placeholder {
-    color: rgba(255,255,255,0.6) !important;
+button[kind="primary"]:hover {
+    background: #00bcd4 !important;
+    color: #000000 !important;
+}
+
+/* =========================
+   TEXT GLOBAL FIX
+   ========================= */
+h1, h2, h3, h4, h5, h6, p, label {
+    color: #ffffff !important;
 }
 
 /* =========================
@@ -116,17 +120,6 @@ input::placeholder {
     text-align: center;
     color: #bdefff;
     margin-bottom: 30px;
-}
-
-/* =========================
-   CARD UI
-   ========================= */
-.card {
-    background: rgba(255,255,255,0.08);
-    padding: 25px;
-    border-radius: 18px;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.2);
 }
 
 /* =========================
@@ -179,19 +172,23 @@ with st.container():
         with open(pdf_path, "wb") as f:
             f.write(uploaded_pdf.read())
 
+        # Load PDF
         loader = PyPDFLoader(pdf_path)
         docs = loader.load()
 
+        # Split text
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=800,
             chunk_overlap=200
         )
         chunks = splitter.split_documents(docs)
 
+        # Embeddings
         embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
 
+        # Vector DB
         vectorstore = Chroma.from_documents(
             chunks,
             embedding=embeddings
@@ -199,8 +196,10 @@ with st.container():
 
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
+        # LLM
         llm = ChatMistralAI(model="mistral-small")
 
+        # Prompt
         prompt = ChatPromptTemplate.from_messages([
             ("system", "Use only the context. If not found, say 'Not found in document.'"),
             ("human", "Context:\n{context}\n\nQuestion:\n{question}")
