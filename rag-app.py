@@ -30,14 +30,16 @@ h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
 }
 
+/* Question Input Styling - Removed external black border */
 input, textarea {
     background: #ffffff !important;
     color: #000000 !important;
-    border: 2px solid #000000 !important;
+    border: none !important;
+    border-radius: 8px !important;
 }
 
 /* =========================================
-   🔘 UNIFIED BUTTON STYLING (UPLOAD & ASK)
+   🔘 UNIFIED BUTTON STYLING
    ========================================= */
 
 /* The Ask Button */
@@ -50,19 +52,13 @@ input, textarea {
     width: 100%;
 }
 
-/* The Upload Button Area */
-.stFileUploader > div > button {
-    background: #000000 !important;
-    color: #ffffff !important;
+/* The Upload Button - Text changed to BLACK */
+[data-testid="stFileUploader"] button {
+    background: #ffffff !important;
+    color: #000000 !important;
     font-weight: 900 !important;
     border-radius: 10px !important;
-    border: 2px solid #333 !important;
-}
-
-/* Uploader Container Fix */
-.stFileUploader > div {
-    background: transparent !important;
-    border: none !important;
+    border: 1px solid #ffffff !important;
 }
 
 /* =========================
@@ -166,7 +162,6 @@ if uploaded_pdf and st.session_state.vectorstore:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", response.content))
 
-    # Display chat in reverse order so latest is at the top
     for role, msg in reversed(st.session_state.chat):
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
