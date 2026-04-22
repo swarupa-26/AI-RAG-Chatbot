@@ -3,7 +3,6 @@ import tempfile
 import streamlit as st
 from dotenv import load_dotenv
 
-# FIXED: Use PyPDFLoader (works on Streamlit Cloud)
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -14,19 +13,23 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌗 AUTO DARK/LIGHT MODE ADAPTIVE UI
+# 🌗 ADAPTIVE UI + BACKGROUND IMAGE
 # -------------------------------------------------------
 st.markdown("""
 <style>
 
 /* ======================
-   SYSTEM DARK MODE
+   🌙 DARK MODE
    ====================== */
 @media (prefers-color-scheme: dark) {
 
-    /* Background */
     [data-testid="stAppViewContainer"] {
-        background: radial-gradient(circle at 20% 20%, #0f2027, #203a43, #000000);
+        background:
+            linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)),
+            url("https://images.unsplash.com/photo-1677442136019-21780ecad995");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         color: white !important;
     }
 
@@ -42,13 +45,17 @@ st.markdown("""
 }
 
 /* ======================
-   SYSTEM LIGHT MODE
+   ☀️ LIGHT MODE
    ====================== */
 @media (prefers-color-scheme: light) {
 
-    /* Light background */
     [data-testid="stAppViewContainer"] {
-        background: linear-gradient(to bottom right, #ffffff, #e7f4ff);
+        background:
+            linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.95)),
+            url("https://images.unsplash.com/photo-1677442136019-21780ecad995");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
         color: black !important;
     }
 
@@ -63,7 +70,7 @@ st.markdown("""
     }
 }
 
-/* ---------- Common UI Styles (Work in both themes) ---------- */
+/* ---------- COMMON UI ---------- */
 
 [data-testid="stHeader"] {
     background: transparent;
@@ -95,7 +102,6 @@ input {
     padding: 10px !important;
 }
 
-/* Button */
 button[kind="primary"] {
     background: linear-gradient(135deg, #00eaff, #007bff) !important;
     color: black !important;
@@ -103,7 +109,6 @@ button[kind="primary"] {
     font-weight: bold !important;
 }
 
-/* Chat bubbles */
 .user-msg {
     background: rgba(255,180,0,0.35);
     padding: 12px;
@@ -123,7 +128,7 @@ button[kind="primary"] {
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# HEADER UI
+# HEADER
 # -------------------------------------------------------
 st.markdown("<div class='title'>🤖 AI RAG Chatbot</div>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>Upload PDF → Ask Questions → Get Smart Answers</div>", unsafe_allow_html=True)
@@ -168,7 +173,7 @@ with st.container():
     st.markdown("</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# CHAT INTERFACE
+# CHAT
 # -------------------------------------------------------
 if uploaded_pdf:
 
@@ -190,7 +195,7 @@ if uploaded_pdf:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", res.content))
 
-    # Display chat bubbles
+    # Display chat
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
