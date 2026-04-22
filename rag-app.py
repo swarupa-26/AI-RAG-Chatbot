@@ -36,16 +36,22 @@ input, textarea {
     border: 2px solid #000000 !important;
 }
 
-/* =========================
-   🔘 BUTTONS & UPLOADER
-   ========================= */
-.stFileUploader > div {
+/* =========================================
+   🔘 UNIFIED BUTTON STYLING (UPLOAD & ASK)
+   ========================================= */
+
+/* The Ask Button */
+.stButton > button {
     background: #000000 !important;
+    color: #ffffff !important;
+    font-weight: 900 !important;
+    border-radius: 10px !important;
     border: 2px solid #333 !important;
-    border-radius: 12px !important;
+    width: 100%;
 }
 
-.stButton > button {
+/* The Upload Button Area */
+.stFileUploader > div > button {
     background: #000000 !important;
     color: #ffffff !important;
     font-weight: 900 !important;
@@ -53,8 +59,14 @@ input, textarea {
     border: 2px solid #333 !important;
 }
 
+/* Uploader Container Fix */
+.stFileUploader > div {
+    background: transparent !important;
+    border: none !important;
+}
+
 /* =========================
-   💬 CHAT UI (ALL WHITE TEXT)
+   💬 CHAT UI (WHITE TEXT)
    ========================= */
 .user-msg {
     background: rgba(255,255,255,0.1);
@@ -133,11 +145,10 @@ if uploaded_pdf and st.session_state.vectorstore:
     retriever = st.session_state.vectorstore.as_retriever(search_kwargs={"k": 5})
     llm = ChatMistralAI(model="mistral-small")
 
-    # Fixed Prompt to prioritize document but allow AI knowledge for clarity
     prompt = ChatPromptTemplate.from_messages([
         ("system", """You are a helpful assistant. Use the provided context to answer. 
-        If the context is insufficient, use your knowledge to provide a complete and accurate technical answer, 
-        but ensure you prioritize any information found in the document."""),
+        If the context is insufficient, use your knowledge to provide a complete technical answer, 
+        prioritizing information found in the document."""),
         ("human", "Context:\n{context}\n\nQuestion:\n{question}")
     ])
 
@@ -155,6 +166,7 @@ if uploaded_pdf and st.session_state.vectorstore:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", response.content))
 
+    # Display chat in reverse order so latest is at the top
     for role, msg in reversed(st.session_state.chat):
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
