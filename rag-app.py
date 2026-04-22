@@ -58,7 +58,7 @@ button[kind="primary"]:hover {
    📂 UPLOAD BOX (BLACK + WHITE TEXT)
    ========================= */
 .stFileUploader > div {
-    background: #000000 !important;
+    background: #111111 !important;
     border: 2px solid #333 !important;
     border-radius: 12px !important;
     padding: 10px !important;
@@ -77,7 +77,7 @@ button[kind="primary"]:hover {
 
 /* Upload button inside */
 button[data-testid="stFileUploaderDropzone"] {
-    background: #000000 !important;
+    background: #111111 !important;
     color: #ffffff !important;
     border: 1px solid #333 !important;
     font-weight: 800 !important;
