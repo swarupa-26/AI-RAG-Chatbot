@@ -1,6 +1,9 @@
 
 This application is a Retrieval-Augmented Generation (RAG) based AI chatbot designed to let users interact with PDF documents and extract accurate, context-aware answers using an LLM.
 
+Live Link of Project  : https://ai-rag-doc-chatbot.streamlit.app/
+
+
 Overview : 
 The app combines document retrieval + AI generation to ensure that answers are not guessed but are grounded in the actual content of the uploaded or preprocessed documents.
 
