@@ -41,7 +41,7 @@ h1, h2, h3, h4, h5, h6, p, label {
    🔘 ASK BUTTON (BLACK + WHITE TEXT)
    ========================= */
 button[kind="primary"] {
-    background: #111111 !important;   /* BLACK */
+    background: #000000 !important;   /* BLACK */
     color: #ffffff !important;        /* WHITE TEXT */
     font-weight: 900 !important;
     border-radius: 10px !important;
@@ -58,7 +58,7 @@ button[kind="primary"]:hover {
    📂 UPLOAD BOX (BLACK + WHITE TEXT)
    ========================= */
 .stFileUploader > div {
-    background: #111111 !important;
+    background: #000000 !important;
     border: 2px solid #333 !important;
     border-radius: 12px !important;
     padding: 10px !important;
@@ -72,12 +72,12 @@ button[kind="primary"]:hover {
 
 /* Upload text */
 .stFileUploader div {
-    background: #111111 !important;
+    color: #ffffff !important;
 }
 
 /* Upload button inside */
 button[data-testid="stFileUploaderDropzone"] {
-    background: #111111 !important;
+    background: #000000 !important;
     color: #ffffff !important;
     border: 1px solid #333 !important;
     font-weight: 800 !important;
