@@ -30,7 +30,7 @@ h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
 }
 
-/* Question Input Styling - Remove border and keep background white */
+/* Question Input Styling */
 [data-testid="stTextInput"] div[data-baseweb="input"] {
     border: none !important;
     background-color: #ffffff !important;
@@ -42,11 +42,7 @@ input {
     color: #000000 !important;
 }
 
-/* =========================================
-   🔘 BUTTON STYLING
-   ========================================= */
-
-/* The Ask Button */
+/* 🔘 BUTTON STYLING */
 .stButton > button {
     background: #000000 !important;
     color: #ffffff !important;
@@ -56,7 +52,6 @@ input {
     width: 100%;
 }
 
-/* The Upload Button - Forced Black for icon and ALL text */
 [data-testid="stFileUploader"] button {
     background: #ffffff !important;
     color: #000000 !important;
@@ -65,15 +60,12 @@ input {
     border: 1px solid #ffffff !important;
 }
 
-/* Targets the specific text and "Browse files" label inside the button */
 [data-testid="stFileUploader"] button * {
     color: #000000 !important;
     fill: #000000 !important;
 }
 
-/* =========================
-   💬 CHAT UI (WHITE TEXT)
-   ========================= */
+/* 💬 CHAT UI */
 .user-msg {
     background: rgba(255,255,255,0.1);
     padding: 12px;
@@ -105,7 +97,26 @@ input {
     color: #bdefff;
     margin-bottom: 30px;
 }
+
+/* ⬇️ FOOTER STYLING */
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0,0,0,0.7);
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    letter-spacing: 1px;
+    z-index: 999;
+}
 </style>
+
+<div class="footer">
+    © 2026 All Rights Reserved | Built with ❤️ by <b>Swarupa Patil</b>
+</div>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------
@@ -124,21 +135,22 @@ if "vectorstore" not in st.session_state:
 
 if uploaded_pdf:
     if st.session_state.vectorstore is None:
-        st.success("PDF uploaded successfully!")
-        temp_dir = tempfile.mkdtemp()
-        pdf_path = os.path.join(temp_dir, uploaded_pdf.name)
+        with st.spinner("Processing PDF..."):
+            temp_dir = tempfile.mkdtemp()
+            pdf_path = os.path.join(temp_dir, uploaded_pdf.name)
 
-        with open(pdf_path, "wb") as f:
-            f.write(uploaded_pdf.read())
+            with open(pdf_path, "wb") as f:
+                f.write(uploaded_pdf.read())
 
-        loader = PyPDFLoader(pdf_path)
-        docs = loader.load()
+            loader = PyPDFLoader(pdf_path)
+            docs = loader.load()
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
-        chunks = splitter.split_documents(docs)
+            splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
+            chunks = splitter.split_documents(docs)
 
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-        st.session_state.vectorstore = Chroma.from_documents(chunks, embedding=embeddings)
+            embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            st.session_state.vectorstore = Chroma.from_documents(chunks, embedding=embeddings)
+            st.success("PDF uploaded and indexed successfully!")
 
 # -------------------------------------------------------
 # CHAT SECTION
@@ -171,6 +183,9 @@ if uploaded_pdf and st.session_state.vectorstore:
 
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", response.content))
+
+    # Add extra padding at the bottom so chat messages don't get hidden by the fixed footer
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
 
     for role, msg in reversed(st.session_state.chat):
         if role == "user":
