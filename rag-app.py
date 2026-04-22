@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌌 DARK UI + AI BACKGROUND
+# 🌌 DARK AI BACKGROUND
 # -------------------------------------------------------
 st.markdown("""
 <style>
@@ -23,7 +23,7 @@ st.markdown("""
    ========================= */
 [data-testid="stAppViewContainer"] {
     background:
-        linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.90)),
+        linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.92)),
         url("https://images.stockcake.com/public/c/7/d/c7d334f3-aa59-4a9a-b77c-afe2ce609223_large/digital-brain-illuminated-stockcake.jpg");
     background-size: cover;
     background-position: center;
@@ -37,18 +37,67 @@ h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
 }
 
-/* Inputs */
+/* =========================
+   🔘 ASK BUTTON (BLACK + WHITE TEXT)
+   ========================= */
+button[kind="primary"] {
+    background: #000000 !important;   /* BLACK */
+    color: #ffffff !important;        /* WHITE TEXT */
+    font-weight: 900 !important;
+    border-radius: 10px !important;
+    border: 1px solid #333 !important;
+}
+
+/* Hover */
+button[kind="primary"]:hover {
+    background: #111111 !important;
+    color: #ffffff !important;
+}
+
+/* =========================
+   📂 UPLOAD BOX (BLACK + WHITE TEXT)
+   ========================= */
+.stFileUploader > div {
+    background: #000000 !important;
+    border: 2px solid #333 !important;
+    border-radius: 12px !important;
+    padding: 10px !important;
+}
+
+/* Upload label */
+.stFileUploader label {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* Upload text */
+.stFileUploader div {
+    color: #ffffff !important;
+}
+
+/* Upload button inside */
+button[data-testid="stFileUploaderDropzone"] {
+    background: #000000 !important;
+    color: #ffffff !important;
+    border: 1px solid #333 !important;
+    font-weight: 800 !important;
+}
+
+/* =========================
+   INPUT FIX
+   ========================= */
 input, textarea {
     background: rgba(255,255,255,0.12) !important;
     color: #ffffff !important;
-    border: 1px solid rgba(255,255,255,0.4) !important;
 }
 
 input::placeholder {
     color: rgba(255,255,255,0.6) !important;
 }
 
-/* Header */
+/* =========================
+   HEADER
+   ========================= */
 [data-testid="stHeader"] {
     background: transparent;
 }
@@ -78,37 +127,6 @@ input::placeholder {
     border-radius: 18px;
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255,255,255,0.2);
-}
-
-/* =========================
-   🔘 BUTTON FIX (BLACK TEXT)
-   ========================= */
-button[kind="primary"] {
-    background: linear-gradient(135deg, #00eaff, #00bcd4) !important;
-    color: #000000 !important;   /* BLACK TEXT */
-    font-weight: 900 !important;
-    border-radius: 10px !important;
-    border: none !important;
-}
-
-/* Hover */
-button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #00d4ff, #0099cc) !important;
-    color: #000000 !important;
-}
-
-/* =========================
-   FILE UPLOADER TEXT FIX
-   ========================= */
-.stFileUploader label {
-    color: #ffffff !important;
-    font-weight: 600 !important;
-}
-
-/* Upload dropzone text */
-button[data-testid="stFileUploaderDropzone"] {
-    color: #000000 !important;   /* BLACK TEXT */
-    font-weight: 800 !important;
 }
 
 /* =========================
@@ -146,7 +164,7 @@ st.markdown("<div class='subtitle'>Upload PDF → Ask Questions → Get Smart An
 with st.container():
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-    uploaded_pdf = st.file_uploader("📄 Upload your PDF", type=["pdf"])
+    uploaded_pdf = st.file_uploader("📄 Upload your PDF here", type=["pdf"])
 
     retriever = None
     llm = None
