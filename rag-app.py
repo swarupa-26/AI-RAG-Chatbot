@@ -13,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 # -------------------------------------------------------
-# 🌗 UI + YOUR AI BRAIN BACKGROUND IMAGE
+# 🌗 UI + AI BRAIN BACKGROUND (FIXED)
 # -------------------------------------------------------
 st.markdown("""
 <style>
@@ -25,8 +25,8 @@ st.markdown("""
 
     [data-testid="stAppViewContainer"] {
         background:
-            linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),
-            url("https://stockcake.com/i/digital-brain-illuminated_2138121_1371949");
+            linear-gradient(rgba(0,0,0,0.78), rgba(0,0,0,0.88)),
+            url("https://images.stockcake.com/public/c/7/d/c7d334f3-aa59-4a9a-b77c-afe2ce609223_large/digital-brain-illuminated-stockcake.jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -52,7 +52,7 @@ st.markdown("""
     [data-testid="stAppViewContainer"] {
         background:
             linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.95)),
-            url("https://stockcake.com/i/digital-brain-illuminated_2138121_1371949");
+            url("https://images.stockcake.com/public/c/7/d/c7d334f3-aa59-4a9a-b77c-afe2ce609223_large/digital-brain-illuminated-stockcake.jpg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -70,12 +70,15 @@ st.markdown("""
     }
 }
 
-/* ---------- COMMON UI ---------- */
+/* ======================
+   COMMON UI DESIGN
+   ====================== */
 
 [data-testid="stHeader"] {
     background: transparent;
 }
 
+/* Title */
 .title {
     font-size: 42px;
     font-weight: 900;
@@ -83,12 +86,14 @@ st.markdown("""
     color: #00eaff;
 }
 
+/* Subtitle */
 .subtitle {
     text-align: center;
     color: #59c8ff;
     margin-bottom: 30px;
 }
 
+/* Glass card */
 .card {
     background: rgba(255,255,255,0.08);
     padding: 25px;
@@ -97,11 +102,13 @@ st.markdown("""
     border: 1px solid rgba(255,255,255,0.2);
 }
 
+/* Input */
 input {
     border-radius: 10px !important;
     padding: 10px !important;
 }
 
+/* Button */
 button[kind="primary"] {
     background: linear-gradient(135deg, #00eaff, #007bff) !important;
     color: black !important;
@@ -109,6 +116,7 @@ button[kind="primary"] {
     font-weight: bold !important;
 }
 
+/* Chat user */
 .user-msg {
     background: rgba(255,180,0,0.35);
     padding: 12px;
@@ -117,6 +125,7 @@ button[kind="primary"] {
     text-align: right;
 }
 
+/* Chat AI */
 .ai-msg {
     background: rgba(0,200,255,0.35);
     padding: 12px;
@@ -134,12 +143,16 @@ st.markdown("<div class='title'>🤖 AI RAG Chatbot</div>", unsafe_allow_html=Tr
 st.markdown("<div class='subtitle'>Upload PDF → Ask Questions → Get Smart Answers</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# FILE UPLOAD + RAG LOGIC
+# FILE UPLOAD + RAG
 # -------------------------------------------------------
 with st.container():
     st.markdown("<div class='card'>", unsafe_allow_html=True)
 
     uploaded_pdf = st.file_uploader("📄 Upload your PDF", type=["pdf"])
+
+    retriever = None
+    llm = None
+    prompt = None
 
     if uploaded_pdf:
         st.success("PDF uploaded!")
@@ -150,21 +163,34 @@ with st.container():
         with open(pdf_path, "wb") as f:
             f.write(uploaded_pdf.read())
 
+        # Load PDF
         loader = PyPDFLoader(pdf_path)
         docs = loader.load()
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=800, chunk_overlap=200)
+        # Split text
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=800,
+            chunk_overlap=200
+        )
         chunks = splitter.split_documents(docs)
 
+        # Embeddings
         embeddings = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
 
-        vectorstore = Chroma.from_documents(chunks, embedding=embeddings)
+        # Vector DB
+        vectorstore = Chroma.from_documents(
+            chunks,
+            embedding=embeddings
+        )
+
         retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
+        # LLM
         llm = ChatMistralAI(model="mistral-small")
 
+        # Prompt
         prompt = ChatPromptTemplate.from_messages([
             ("system", "Use only the context. If not found, say 'Not found in document.'"),
             ("human", "Context:\n{context}\n\nQuestion:\n{question}")
@@ -173,16 +199,17 @@ with st.container():
     st.markdown("</div>", unsafe_allow_html=True)
 
 # -------------------------------------------------------
-# CHAT
+# CHAT SECTION
 # -------------------------------------------------------
-if uploaded_pdf:
+if uploaded_pdf and retriever:
 
     if "chat" not in st.session_state:
         st.session_state.chat = []
 
     query = st.text_input("💬 Ask your question:")
 
-    if st.button("Ask"):
+    if st.button("Ask") and query:
+
         docs = retriever.invoke(query)
 
         context = "\n\n".join([d.page_content for d in docs])
@@ -195,6 +222,7 @@ if uploaded_pdf:
         st.session_state.chat.append(("user", query))
         st.session_state.chat.append(("ai", res.content))
 
+    # Show chat history
     for role, msg in st.session_state.chat:
         if role == "user":
             st.markdown(f"<div class='user-msg'>{msg}</div>", unsafe_allow_html=True)
